@@ -200,7 +200,8 @@
                 <div class="result-body">
                     <div id="result-badge" class="badge"></div>
                     <p id="confidence-text" class="mono small"></p>
-                    <p class="note">Find the glowing orb in the 3D map. Its position shows how this employee compares with people who stayed or left.</p>
+                    <p class="note">The glowing orb in the 3D map shows where this employee sits compared with people who stayed or left.</p>
+                    <button type="button" id="view3d" class="ghost hidden">View in 3D map</button>
                 </div>
             </div>
         </div>
@@ -209,6 +210,9 @@
         Flask &middot; scikit-learn &middot; XGBoost &middot; Three.js &nbsp;|&nbsp; trained on {{ metrics.dataset_size }} employees ({{ metrics.train_size }} train / {{ metrics.test_size }} test)
     </footer>
 </section>
+
+<div id="focus-cap" class="focus-cap"></div>
+<button type="button" id="back3d" class="back3d">&larr; Back to results</button>
 
 <script>window.__METRICS__ = {{ metrics | tojson }};</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

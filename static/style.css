@@ -195,3 +195,17 @@ footer { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center
     .reveal { opacity: 1; transform: none; transition: none; }
     .arrow { animation: none; }
 }
+
+/* ---- 3D focus mode: fade the page away and show only the map ---- */
+.scene { transition: opacity 0.45s ease; }
+button.ghost { margin-top: 12px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--violet); background: transparent; color: var(--ink); font: 600 0.9rem 'Space Grotesk', sans-serif; cursor: pointer; }
+button.ghost:hover { background: rgba(124, 123, 255, 0.18); }
+button.ghost.hidden { display: none; }
+.back3d { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 40; display: none; padding: 12px 22px; border-radius: 999px; border: 1px solid var(--violet); background: rgba(10, 12, 22, 0.8); backdrop-filter: blur(10px); color: var(--ink); font: 600 0.95rem 'Space Grotesk', sans-serif; cursor: pointer; }
+.focus-cap { position: fixed; top: 26px; left: 50%; transform: translateX(-50%); z-index: 40; display: none; text-align: center; padding: 12px 20px; border-radius: 14px; background: rgba(10, 12, 22, 0.75); backdrop-filter: blur(10px); border: 1px solid var(--line); font-size: 1rem; max-width: calc(100% - 32px); }
+.focus-cap span { color: var(--muted); font-size: 0.82rem; }
+.focus-cap.risk b { color: var(--leave); }
+.focus-cap.safe b { color: var(--stay); }
+body.focus3d { overflow: hidden; }
+body.focus3d .scene, body.focus3d #dots { opacity: 0; pointer-events: none; }
+body.focus3d .back3d, body.focus3d .focus-cap { display: block; }

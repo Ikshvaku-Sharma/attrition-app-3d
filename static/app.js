@@ -107,6 +107,7 @@
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('load', function () { measure(); onScroll(); });
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { measure(); onScroll(); }); }
     window.addEventListener('resize', function () { measure(); onScroll(); });
     measure(); onScroll();
 
@@ -290,11 +291,13 @@
         window.addEventListener('resize', resize);
         resize();
 
-        T.markerActive = false; T.markerTarget = 0;
+        T.markerActive = false; T.markerTarget = 0; T.focus = false;
+        var frameCount = 0;
 
         (function frame(now) {
             requestAnimationFrame(frame);
             var dt = Math.min((now - last) / 1000, 0.05); last = now; time += dt;
+            frameCount++; if (frameCount % 60 === 0) measure();
             var f = sceneFloat();
             var N = KEYS.length;
             var alpha = reduce ? 1 : 1 - Math.exp(-dt * 3.2);
@@ -302,7 +305,11 @@
             var k = keyAt(f);
             var inPredict = f > N - 1.6;
 
-            if (T.markerActive && inPredict) {
+            if (T.markerActive && T.focus) {
+                T.marker.getWorldPosition(tmp);
+                k.p.copy(tmp).add(new THREE.Vector3(0, 0.9, 6.5));
+                k.l.copy(tmp);
+            } else if (T.markerActive && inPredict) {
                 var blend = smooth(clamp((f - (N - 2.4)) / 1.2, 0, 1));
                 T.marker.getWorldPosition(tmp);
                 var S = isDesktop() ? 1 : 0;
@@ -318,7 +325,7 @@
             T.camera.position.set(camPos.x + smx * 0.7, camPos.y - smy * 0.5, camPos.z);
             T.camera.lookAt(camLook);
 
-            var rotTarget = (reduce || (T.markerActive && inPredict)) ? 0 : 0.05;
+            var rotTarget = (reduce || (T.markerActive && (inPredict || T.focus))) ? 0 : 0.05;
             rot += (rotTarget - rot) * (1 - Math.exp(-dt * 2));
             T.world.rotation.y += rot * dt * 3;
             T.world.rotation.x = Math.sin(f * 0.7) * 0.12;
@@ -382,6 +389,15 @@
         return leftCount + ' of the 6 nearest employees in the map left';
     }
 
+    function setFocus(on) {
+        if (!three) return;
+        three.focus = on;
+        document.body.classList.toggle('focus3d', on);
+    }
+    $('view3d').addEventListener('click', function () { setFocus(true); });
+    $('back3d').addEventListener('click', function () { setFocus(false); });
+    window.addEventListener('keydown', function (e) { if (e.key === 'Escape') setFocus(false); });
+
     $('predict-form').addEventListener('submit', function (e) {
         e.preventDefault();
         var btn = $('predict-btn');
@@ -418,6 +434,11 @@
                     inc: +payload.monthlyIncome, yrs: +payload.yearsAtCompany
                 }, out.prediction);
                 if (neighbours) text += '  |  ' + neighbours;
+                if (three) {
+                    $('view3d').classList.remove('hidden');
+                    $('focus-cap').innerHTML = '<b>' + out.label + '</b> &middot; ' + out.risk_score + '% risk' + (neighbours ? '<br><span>' + neighbours + '</span>' : '');
+                    $('focus-cap').className = 'focus-cap ' + (out.prediction === 1 ? 'risk' : 'safe');
+                }
                 $('confidence-text').textContent = text;
             })
             .catch(function () {
