@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Attrition Predictor | AI/ML</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="vignette"></div>
+<div id="progress"></div>
+
+<nav id="dots" aria-label="Sections"></nav>
+
+<div id="hud" class="mono">
+    <span>NODES <b id="hud-nodes">0</b></span>
+    <span>STAY <b id="hud-stay" class="c-stay">0</b></span>
+    <span>LEFT <b id="hud-left" class="c-leave">0</b></span>
+</div>
+
+<!-- 1. HERO -->
+<section class="scene hero" data-scene data-name="Start">
+    <div class="wrap">
+        <p class="eyebrow mono reveal">AI / ML &middot; RANDOM FOREST &middot; XGBOOST</p>
+        <h1 class="reveal d1">Who is about to<br><span class="grad">walk out the door?</span></h1>
+        <p class="lead reveal d2">An attrition prediction system that learns from HR data and flags employees at risk of leaving, before the resignation letter lands.</p>
+        <div class="hero-stats reveal d3">
+            <div><span class="big" data-count="{{ (metrics.xgb.accuracy * 100) | round(1) }}" data-dec="1" data-suffix="%">0</span><span class="mono small">XGBOOST ACCURACY</span></div>
+            <div><span class="big" data-count="{{ metrics.dataset_size }}" data-dec="0">0</span><span class="mono small">EMPLOYEES</span></div>
+            <div><span class="big" data-count="9" data-dec="0">0</span><span class="mono small">SIGNALS</span></div>
+        </div>
+        <div class="scroll-cue mono reveal d3">SCROLL TO ENTER THE DATA <span class="arrow">&darr;</span></div>
+    </div>
+</section>
+
+<!-- 2. PROBLEM -->
+<section class="scene" data-scene data-name="Problem">
+    <div class="wrap">
+        <p class="eyebrow mono reveal">01 &middot; THE PROBLEM</p>
+        <h2 class="reveal d1">HR usually finds out <span class="grad">too late.</span></h2>
+        <div class="cards three">
+            <article class="glass reveal d1">
+                <h3>Reactive</h3>
+                <p>Most companies learn someone is unhappy only when the resignation arrives. By then, nothing can be fixed.</p>
+            </article>
+            <article class="glass reveal d2">
+                <h3>Expensive</h3>
+                <p>Replacing an employee is commonly estimated at half to double their annual salary once hiring, onboarding and lost output are counted.</p>
+            </article>
+            <article class="glass reveal d3">
+                <h3>Predictable</h3>
+                <p>Overtime, satisfaction, pay, tenure and promotions leave a pattern in the data. A model can learn that pattern.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- 3. DATA -->
+<section class="scene" data-scene data-name="Data">
+    <div class="wrap narrow">
+        <p class="eyebrow mono reveal">02 &middot; THE DATA</p>
+        <h2 class="reveal d1">Every dot is an <span class="grad">employee.</span></h2>
+        <p class="lead reveal d2">{{ metrics.dataset_size }} employees, 9 features each. In the 3D map behind this page, position comes from three real signals, and colour shows what actually happened.</p>
+        <ul class="axes mono reveal d2">
+            <li><b>X</b> satisfaction + work-life balance</li>
+            <li><b>Y</b> monthly income</li>
+            <li><b>Z</b> years at company</li>
+        </ul>
+        <div class="legend reveal d3">
+            <span><i class="dot stay"></i> Stayed</span>
+            <span><i class="dot leave"></i> Left</span>
+        </div>
+        <p class="note reveal d3">Notice how the red dots drift toward the low-satisfaction side. That separation is what the models learn to exploit.</p>
+    </div>
+</section>
+
+<!-- 4. MODELS -->
+<section class="scene" data-scene data-name="Models">
+    <div class="wrap">
+        <p class="eyebrow mono reveal">03 &middot; THE MODELS</p>
+        <h2 class="reveal d1">Two models. <span class="grad">One winner.</span></h2>
+        <div class="cards two">
+            <article class="glass model reveal d1">
+                <header><h3>Random Forest</h3><span class="tag mono">100 trees</span></header>
+                <div class="acc"><span data-count="{{ (metrics.rf.accuracy * 100) | round(1) }}" data-dec="1" data-suffix="%">0</span></div>
+                <div class="mini mono">
+                    <div><b>{{ (metrics.rf.precision * 100) | round(1) }}%</b> precision</div>
+                    <div><b>{{ (metrics.rf.recall * 100) | round(1) }}%</b> recall</div>
+                    <div><b>{{ (metrics.rf.f1 * 100) | round(1) }}%</b> f1</div>
+                </div>
+                <p class="desc">Many independent decision trees vote. Stable and hard to overfit.</p>
+            </article>
+            <article class="glass model win reveal d2">
+                <header><h3>XGBoost</h3><span class="tag mono win-tag">best</span></header>
+                <div class="acc"><span data-count="{{ (metrics.xgb.accuracy * 100) | round(1) }}" data-dec="1" data-suffix="%">0</span></div>
+                <div class="mini mono">
+                    <div><b>{{ (metrics.xgb.precision * 100) | round(1) }}%</b> precision</div>
+                    <div><b>{{ (metrics.xgb.recall * 100) | round(1) }}%</b> recall</div>
+                    <div><b>{{ (metrics.xgb.f1 * 100) | round(1) }}%</b> f1</div>
+                </div>
+                <p class="desc">Trees built one after another, each fixing the previous tree's mistakes.</p>
+            </article>
+        </div>
+
+        <div class="cards two lower">
+            <article class="glass reveal d1">
+                <h3>What drives attrition</h3>
+                <p class="sub mono">XGBOOST FEATURE IMPORTANCE</p>
+                <div id="bars"></div>
+            </article>
+            <article class="glass reveal d2">
+                <h3>Confusion matrix</h3>
+                <p class="sub mono">XGBOOST &middot; {{ metrics.test_size }} UNSEEN EMPLOYEES</p>
+                <div class="cm">
+                    <div class="cm-h"></div><div class="cm-h mono">Pred: Stay</div><div class="cm-h mono">Pred: Leave</div>
+                    <div class="cm-h mono">Actual: Stay</div>
+                    <div class="cm-c good">{{ metrics.xgb.confusion_matrix[0][0] }}</div>
+                    <div class="cm-c bad">{{ metrics.xgb.confusion_matrix[0][1] }}</div>
+                    <div class="cm-h mono">Actual: Leave</div>
+                    <div class="cm-c bad">{{ metrics.xgb.confusion_matrix[1][0] }}</div>
+                    <div class="cm-c good">{{ metrics.xgb.confusion_matrix[1][1] }}</div>
+                </div>
+                <p class="note">Green cells are correct predictions. Red cells are mistakes.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- 5. PREDICT -->
+<section class="scene predict" data-scene data-name="Predict">
+    <div class="wrap">
+        <p class="eyebrow mono reveal">04 &middot; TRY IT</p>
+        <h2 class="reveal d1">Place an employee <span class="grad">in the map.</span></h2>
+
+        <div class="predict-grid">
+            <form id="predict-form" class="glass reveal d1">
+                <div class="grid">
+                    <label>Age <output id="age-val">30</output>
+                        <input type="range" id="age" min="21" max="60" value="30">
+                    </label>
+                    <label>Monthly Income (&#8377;)
+                        <input type="number" id="monthlyIncome" min="15000" max="150000" value="45000" step="1000">
+                    </label>
+                    <label>Years at Company <output id="years-val">3</output>
+                        <input type="range" id="yearsAtCompany" min="0" max="25" value="3">
+                    </label>
+                    <label>Distance from Home (km) <output id="distance-val">15</output>
+                        <input type="range" id="distanceFromHome" min="1" max="30" value="15">
+                    </label>
+                    <label>Job Satisfaction
+                        <select id="jobSatisfaction">
+                            <option value="1">1 - Low</option><option value="2" selected>2</option>
+                            <option value="3">3</option><option value="4">4 - High</option>
+                        </select>
+                    </label>
+                    <label>Work-Life Balance
+                        <select id="workLifeBalance">
+                            <option value="1">1 - Bad</option><option value="2" selected>2</option>
+                            <option value="3">3</option><option value="4">4 - Great</option>
+                        </select>
+                    </label>
+                    <label>Performance Rating
+                        <select id="performanceRating">
+                            <option value="1">1</option><option value="2">2</option>
+                            <option value="3" selected>3</option><option value="4">4</option>
+                        </select>
+                    </label>
+                    <label>Number of Promotions
+                        <select id="numPromotions">
+                            <option value="0" selected>0</option><option value="1">1</option>
+                            <option value="2">2</option><option value="3">3</option><option value="4">4</option>
+                        </select>
+                    </label>
+                    <label>Overtime
+                        <select id="overtime"><option value="no">No</option><option value="yes">Yes</option></select>
+                    </label>
+                    <label>Model
+                        <select id="model">
+                            <option value="xgb">XGBoost (best)</option>
+                            <option value="rf">Random Forest</option>
+                        </select>
+                    </label>
+                </div>
+                <button type="submit" id="predict-btn">Run prediction</button>
+            </form>
+
+            <div id="result" class="glass result hidden" aria-live="polite">
+                <div class="ring-wrap">
+                    <svg viewBox="0 0 120 120" class="ring">
+                        <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                        <circle cx="60" cy="60" r="52" class="ring-fg" id="ring-fg"/>
+                    </svg>
+                    <div class="ring-text"><span id="risk-num">0</span><small>% risk</small></div>
+                </div>
+                <div class="result-body">
+                    <div id="result-badge" class="badge"></div>
+                    <p id="confidence-text" class="mono small"></p>
+                    <p class="note">Find the glowing orb in the 3D map. Its position shows how this employee compares with people who stayed or left.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="mono">
+        Flask &middot; scikit-learn &middot; XGBoost &middot; Three.js &nbsp;|&nbsp; trained on {{ metrics.dataset_size }} employees ({{ metrics.train_size }} train / {{ metrics.test_size }} test)
+    </footer>
+</section>
+
+<script>window.__METRICS__ = {{ metrics | tojson }};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

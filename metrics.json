@@ -1,0 +1,70 @@
+{
+  "features": [
+    "Age",
+    "MonthlyIncome",
+    "YearsAtCompany",
+    "JobSatisfaction",
+    "OverTime",
+    "DistanceFromHome",
+    "NumPromotions",
+    "WorkLifeBalance",
+    "PerformanceRating"
+  ],
+  "rf": {
+    "accuracy": 0.865,
+    "precision": 0.8686868686868687,
+    "recall": 0.86,
+    "f1": 0.864321608040201,
+    "confusion_matrix": [
+      [
+        87,
+        13
+      ],
+      [
+        14,
+        86
+      ]
+    ],
+    "feature_importance": {
+      "Age": 0.08583650278102373,
+      "MonthlyIncome": 0.2867507639558561,
+      "YearsAtCompany": 0.12278534679547742,
+      "JobSatisfaction": 0.13861085714430013,
+      "OverTime": 0.0836661573072208,
+      "DistanceFromHome": 0.08208473531561754,
+      "NumPromotions": 0.0875962840046964,
+      "WorkLifeBalance": 0.08311893751027158,
+      "PerformanceRating": 0.02955041518553638
+    }
+  },
+  "xgb": {
+    "accuracy": 0.905,
+    "precision": 0.9263157894736842,
+    "recall": 0.88,
+    "f1": 0.9025641025641026,
+    "confusion_matrix": [
+      [
+        93,
+        7
+      ],
+      [
+        12,
+        88
+      ]
+    ],
+    "feature_importance": {
+      "Age": 0.06615404039621353,
+      "MonthlyIncome": 0.14304736256599426,
+      "YearsAtCompany": 0.08906351029872894,
+      "JobSatisfaction": 0.1437850147485733,
+      "OverTime": 0.18095941841602325,
+      "DistanceFromHome": 0.07465020567178726,
+      "NumPromotions": 0.12187816947698593,
+      "WorkLifeBalance": 0.11758600175380707,
+      "PerformanceRating": 0.06287627667188644
+    }
+  },
+  "dataset_size": 1000,
+  "train_size": 800,
+  "test_size": 200
+}
